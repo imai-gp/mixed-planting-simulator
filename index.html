@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>和欧混植 シミュレーター</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  :root { color-scheme: light; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif; }
+  input[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
+    height: 6px;
+    border-radius: 9999px;
+    background: #e2e8f0;
+    outline: none;
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 9999px;
+    background: #4f46e5;
+    cursor: pointer;
+    border: 3px solid #fff;
+    box-shadow: 0 0 0 1px rgba(79,70,229,0.4);
+  }
+  input[type="range"]::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    border-radius: 9999px;
+    background: #4f46e5;
+    cursor: pointer;
+    border: 3px solid #fff;
+    box-shadow: 0 0 0 1px rgba(79,70,229,0.4);
+  }
+  input[type="range"]:disabled::-webkit-slider-thumb { background: #94a3b8; }
+  #preview-text:focus { outline: 2px solid #c7d2fe; outline-offset: 4px; }
+  .basis-radio:checked + label {
+    background-color: #4f46e5;
+    color: #fff;
+    border-color: #4f46e5;
+  }
+</style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen">
+
+<header class="border-b border-slate-200 bg-white">
+  <div class="max-w-7xl mx-auto px-6 py-5">
+    <h1 class="text-xl font-bold tracking-tight text-slate-900">和欧混植 &amp; font-size-adjust シミュレーター</h1>
+    <p class="mt-1 text-sm text-slate-500">Google Fonts の欧文・和文フォントを組み合わせ、<code class="px-1 py-0.5 rounded bg-slate-100 text-indigo-600">font-size-adjust</code> で字面の見た目の大きさを揃えるシミュレーターです。</p>
+  </div>
+</header>
+
+<main class="max-w-7xl mx-auto px-6 py-8 grid grid-cols-1 lg:grid-cols-[380px_1fr] gap-6 items-start">
+
+  <!-- ===================== 設定パネル ===================== -->
+  <section class="bg-white border border-slate-200 rounded-2xl shadow-sm p-6 space-y-8 lg:sticky lg:top-6">
+
+    <!-- フォント選択 -->
+    <div class="space-y-4">
+      <h2 class="text-sm font-semibold text-slate-900 flex items-center gap-2">
+        <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-indigo-100 text-indigo-600 text-xs">1</span>
+        フォント選択
+      </h2>
+
+      <div>
+        <label for="latin-font" class="block text-xs font-medium text-slate-500 mb-1">欧文フォント</label>
+        <select id="latin-font" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-200 focus:border-indigo-400"></select>
+        <div class="mt-2 flex gap-1.5">
+          <input id="latin-custom-input" type="text" list="latin-font-suggestions" autocomplete="off" placeholder="任意のGoogle Fonts名 (例: Zen Maru Gothic)" class="flex-1 min-w-0 rounded-lg border border-slate-300 bg-white px-2.5 py-1.5 text-xs focus:ring-2 focus:ring-indigo-200 focus:border-indigo-400">
+          <button id="latin-custom-btn" type="button" class="shrink-0 text-xs font-medium px-3 py-1.5 rounded-lg border border-indigo-200 text-indigo-600 hover:bg-indigo-50 transition-colors">追加</button>
+        </div>
+        <datalist id="latin-font-suggestions"></datalist>
+      </div>
+
+      <div>
+        <label for="jp-font" class="block text-xs font-medium text-slate-500 mb-1">和文フォント</label>
+        <select id="jp-font" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-200 focus:border-indigo-400"></select>
+        <div class="mt-2 flex gap-1.5">
+          <input id="jp-custom-input" type="text" list="jp-font-suggestions" autocomplete="off" placeholder="任意のGoogle Fonts名 (例: Kaisei Decol)" class="flex-1 min-w-0 rounded-lg border border-slate-300 bg-white px-2.5 py-1.5 text-xs focus:ring-2 focus:ring-indigo-200 focus:border-indigo-400">
+          <button id="jp-custom-btn" type="button" class="shrink-0 text-xs font-medium px-3 py-1.5 rounded-lg border border-indigo-200 text-indigo-600 hover:bg-indigo-50 transition-colors">追加</button>
+        </div>
+        <datalist id="jp-font-suggestions"></datalist>
+        <p class="mt-1.5 text-[11px] leading-snug text-slate-400">入力すると候補が表示されます（Google Fontsの正式名称）。</p>
+      </div>
+    </div>
+
+    <hr class="border-slate-100">
+
+    <!-- font-size -->
+    <div class="space-y-3">
+      <h2 class="text-sm font-semibold text-slate-900 flex items-center gap-2">
+        <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-indigo-100 text-indigo-600 text-xs">2</span>
+        font-size
+      </h2>
+      <div class="flex items-center justify-between">
+        <label for="font-size" class="text-xs font-medium text-slate-500">サイズ</label>
+        <span id="font-size-value" class="text-sm font-mono font-semibold text-indigo-600">32px</span>
+      </div>
+      <input id="font-size" type="range" min="12" max="72" step="1" value="32" class="w-full">
+    </div>
+
+    <hr class="border-slate-100">
+
+    <!-- font-weight -->
+    <div class="space-y-3">
+      <h2 class="text-sm font-semibold text-slate-900 flex items-center gap-2">
+        <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-indigo-100 text-indigo-600 text-xs">3</span>
+        font-weight
+      </h2>
+      <select id="font-weight" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-200 focus:border-indigo-400"></select>
+      <p class="text-[11px] leading-snug text-slate-400">指定したウエイトは欧文・和文どちらのフォントにも適用されます。フォントに該当ウエイトの字形が無い場合、ブラウザが近いウエイトで代替表示します。</p>
+    </div>
+
+    <hr class="border-slate-100">
+
+    <!-- letter-spacing -->
+    <div class="space-y-3">
+      <h2 class="text-sm font-semibold text-slate-900 flex items-center gap-2">
+        <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-indigo-100 text-indigo-600 text-xs">4</span>
+        letter-spacing
+      </h2>
+      <div class="flex gap-2">
+        <input id="letter-spacing-value" type="number" step="0.01" value="0" class="flex-1 min-w-0 rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-200 focus:border-indigo-400">
+        <select id="letter-spacing-unit" class="w-20 rounded-lg border border-slate-300 bg-white px-2 py-2 text-sm focus:ring-2 focus:ring-indigo-200 focus:border-indigo-400">
+          <option value="em" selected>em</option>
+          <option value="px">px</option>
+        </select>
+      </div>
+    </div>
+
+    <hr class="border-slate-100">
+
+    <!-- font-feature-settings: palt -->
+    <div class="space-y-3">
+      <div class="flex items-center justify-between">
+        <h2 class="text-sm font-semibold text-slate-900 flex items-center gap-2">
+          <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-indigo-100 text-indigo-600 text-xs">5</span>
+          font-feature-settings
+        </h2>
+        <label class="inline-flex items-center cursor-pointer gap-2">
+          <span class="text-xs font-medium text-slate-500">palt 有効</span>
+          <input id="palt-enabled" type="checkbox" class="sr-only peer">
+          <span class="relative w-9 h-5 bg-slate-300 peer-checked:bg-indigo-600 rounded-full transition-colors after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:after:translate-x-4"></span>
+        </label>
+      </div>
+      <p class="text-[11px] leading-snug text-slate-400">和文フォントのプロポーショナルメトリクス（約物・かなの詰め組み）を有効にします。</p>
+    </div>
+
+    <hr class="border-slate-100">
+
+    <!-- font-size-adjust -->
+    <div class="space-y-4">
+      <div class="flex items-center justify-between">
+        <h2 class="text-sm font-semibold text-slate-900 flex items-center gap-2">
+          <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-indigo-100 text-indigo-600 text-xs">6</span>
+          font-size-adjust
+        </h2>
+        <label class="inline-flex items-center cursor-pointer gap-2">
+          <span class="text-xs font-medium text-slate-500">有効</span>
+          <input id="adjust-enabled" type="checkbox" checked class="sr-only peer">
+          <span class="relative w-9 h-5 bg-slate-300 peer-checked:bg-indigo-600 rounded-full transition-colors after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:after:translate-x-4"></span>
+        </label>
+      </div>
+
+      <div id="adjust-controls" class="space-y-4">
+        <div>
+          <span class="block text-xs font-medium text-slate-500 mb-2">基準（キーワード）</span>
+          <div class="grid grid-cols-2 gap-2" id="basis-group">
+            <!-- ラジオボタンは JS で生成 -->
+          </div>
+        </div>
+
+        <div>
+          <div class="flex items-center justify-between">
+            <label for="adjust-value" class="text-xs font-medium text-slate-500">数値（値）</label>
+            <span id="adjust-value-display" class="text-sm font-mono font-semibold text-indigo-600">0.50</span>
+          </div>
+          <input id="adjust-value" type="range" min="0.1" max="1.0" step="0.01" value="0.50" class="w-full mt-2">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== プレビュー & エクスポート ===================== -->
+  <section class="space-y-6">
+
+    <div class="grid grid-cols-1 gap-6">
+      <div class="bg-white border border-slate-200 rounded-2xl shadow-sm p-6">
+        <div class="flex items-center justify-between mb-3">
+          <h2 class="text-sm font-semibold text-slate-900">混植前</h2>
+          <span class="text-xs text-slate-400">font-size-adjust 未適用</span>
+        </div>
+        <div
+          id="preview-before"
+          spellcheck="false"
+          class="min-h-[200px] w-full rounded-xl border border-slate-200 bg-slate-50/50 px-5 py-4 leading-relaxed break-words"
+        ></div>
+      </div>
+
+      <div class="bg-white border border-indigo-200 rounded-2xl shadow-sm p-6 ring-1 ring-indigo-100">
+        <div class="flex items-center justify-between mb-3">
+          <h2 class="text-sm font-semibold text-slate-900">混植後 <span class="font-normal text-indigo-500">(現在の設定)</span></h2>
+          <span class="text-xs text-slate-400">クリックして自由に編集できます</span>
+        </div>
+        <div
+          id="preview-text"
+          contenteditable="true"
+          spellcheck="false"
+          class="min-h-[200px] w-full rounded-xl border border-slate-200 bg-slate-50/50 px-5 py-4 leading-relaxed break-words"
+        >CSSの font-size-adjust プロパティを使用すると、異なるフォント間（例えば Inter と Noto Sans JP など）の視覚的なボリューム感を美しく揃えることができます。 0123456789 ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz</div>
+        <p class="mt-2 text-[11px] text-slate-400">こちらを編集すると「混植前」にも自動的に反映されます。</p>
+      </div>
+    </div>
+
+    <div class="bg-white border border-slate-200 rounded-2xl shadow-sm p-6">
+      <div class="flex items-center justify-between mb-3">
+        <h2 class="text-sm font-semibold text-slate-900">CSS コード</h2>
+        <button id="copy-btn" class="inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 transition-colors">
+          <span id="copy-btn-label">コピー</span>
+        </button>
+      </div>
+      <pre id="code-output" class="text-xs sm:text-sm font-mono bg-slate-900 text-slate-100 rounded-xl p-4 overflow-x-auto leading-relaxed"></pre>
+    </div>
+
+  </section>
+
+</main>
+
+<footer class="max-w-7xl mx-auto px-6 pb-10 text-xs text-slate-400">
+  Google Fonts のフォントは選択時に動的に読み込まれます。<code class="text-slate-500">font-size-adjust</code> は対応ブラウザでのみ見た目に反映されます。
+</footer>
+
+<script>
+(function () {
+  // ------------------------------------------------------------------
+  // フォント定義
+  // ------------------------------------------------------------------
+  // 太さ違いの字形を持たないフォントでも、Google Fonts API は未対応のウエイトを無視するだけなので、
+  // 常に全ウエイトをリクエストしてユーザーが選んだウエイトに対応できるようにする
+  const FULL_WEIGHT_RANGE = '100;200;300;400;500;600;700;800;900';
+
+  const latinFonts = [
+    { name: 'Inter',            value: 'Inter',            weights: FULL_WEIGHT_RANGE },
+    { name: 'Roboto',           value: 'Roboto',           weights: FULL_WEIGHT_RANGE },
+    { name: 'Playfair Display', value: 'Playfair Display', weights: FULL_WEIGHT_RANGE },
+    { name: 'EB Garamond',      value: 'EB Garamond',      weights: FULL_WEIGHT_RANGE },
+    { name: 'Merriweather',     value: 'Merriweather',     weights: FULL_WEIGHT_RANGE },
+    { name: 'Montserrat',       value: 'Montserrat',       weights: FULL_WEIGHT_RANGE },
+  ];
+
+  const jpFonts = [
+    { name: 'Noto Sans JP',   value: 'Noto Sans JP',   weights: FULL_WEIGHT_RANGE },
+    { name: 'Noto Serif JP',  value: 'Noto Serif JP',  weights: FULL_WEIGHT_RANGE },
+    { name: 'BIZ UDPGothic',  value: 'BIZ UDPGothic',  weights: FULL_WEIGHT_RANGE },
+    { name: 'BIZ UDMincho',   value: 'BIZ UDMincho',   weights: FULL_WEIGHT_RANGE },
+    { name: 'Kosugi Maru',    value: 'Kosugi Maru',    weights: FULL_WEIGHT_RANGE },
+  ];
+
+  const weightOptions = [
+    { value: '100', name: '100 - Thin' },
+    { value: '200', name: '200 - Extra Light' },
+    { value: '300', name: '300 - Light' },
+    { value: '400', name: '400 - Regular' },
+    { value: '500', name: '500 - Medium' },
+    { value: '600', name: '600 - SemiBold' },
+    { value: '700', name: '700 - Bold' },
+    { value: '800', name: '800 - Extra Bold' },
+    { value: '900', name: '900 - Black' },
+  ];
+
+  // カスタムフォント入力欄の入力候補（よく使われるGoogle Fontsファミリー名）
+  const latinFontSuggestions = [
+    'Roboto', 'Roboto Slab', 'Roboto Mono', 'Roboto Condensed', 'Open Sans', 'Lato',
+    'Montserrat', 'Poppins', 'Source Sans 3', 'Source Serif 4', 'Source Code Pro',
+    'Nunito', 'Nunito Sans', 'Raleway', 'Ubuntu', 'Ubuntu Mono', 'Work Sans', 'Rubik',
+    'PT Sans', 'PT Serif', 'PT Mono', 'Merriweather', 'Merriweather Sans',
+    'Playfair Display', 'Lora', 'Libre Baskerville', 'Libre Franklin', 'EB Garamond',
+    'Crimson Text', 'Crimson Pro', 'Cormorant', 'Cormorant Garamond', 'Bitter',
+    'Fira Sans', 'Fira Code', 'JetBrains Mono', 'IBM Plex Sans', 'IBM Plex Serif',
+    'IBM Plex Mono', 'DM Sans', 'DM Serif Display', 'DM Mono', 'Karla', 'Quicksand',
+    'Josefin Sans', 'Josefin Slab', 'Oswald', 'Bebas Neue', 'Anton', 'Archivo',
+    'Archivo Black', 'Archivo Narrow', 'Barlow', 'Barlow Condensed', 'Cabin',
+    'Catamaran', 'Dosis', 'Exo', 'Exo 2', 'Hind', 'Heebo', 'Inconsolata', 'Manrope',
+    'Maven Pro', 'Mulish', 'Noto Sans', 'Noto Serif', 'Outfit', 'Overpass', 'Oxygen',
+    'Pacifico', 'Permanent Marker', 'Public Sans', 'Questrial', 'Red Hat Display',
+    'Red Hat Text', 'Righteous', 'Rokkitt', 'Sacramento', 'Signika', 'Space Grotesk',
+    'Space Mono', 'Spectral', 'Teko', 'Titillium Web', 'Varela Round', 'Vollkorn',
+    'Yanone Kaffeesatz', 'Caveat', 'Comfortaa', 'Dancing Script', 'Great Vibes',
+    'Lobster', 'Indie Flower', 'Kalam', 'Patrick Hand', 'Satisfy', 'Abril Fatface',
+    'Alegreya', 'Alegreya Sans', 'Amiri', 'Asap', 'Baloo 2', 'Cardo', 'Domine',
+    'Faustina', 'Frank Ruhl Libre', 'Jost', 'Kanit', 'Lexend', 'Literata', 'Marcellus',
+    'Neuton', 'Petrona', 'Piazzolla', 'Prata', 'Sora', 'Syne', 'Urbanist', 'Zilla Slab',
+  ];
+
+  const jpFontSuggestions = [
+    'Noto Sans JP', 'Noto Serif JP', 'M PLUS 1p', 'M PLUS Rounded 1c', 'M PLUS 1',
+    'M PLUS 2', 'Kosugi', 'Kosugi Maru', 'Sawarabi Gothic', 'Sawarabi Mincho',
+    'BIZ UDPGothic', 'BIZ UDGothic', 'BIZ UDPMincho', 'BIZ UDMincho',
+    'Zen Kaku Gothic New', 'Zen Kaku Gothic Antique', 'Zen Old Mincho',
+    'Zen Maru Gothic', 'Zen Antique', 'Zen Antique Soft', 'Shippori Mincho',
+    'Shippori Mincho B1', 'Shippori Antique', 'Shippori Antique B1', 'Kaisei Decol',
+    'Kaisei Opti', 'Kaisei HarunoUmi', 'Kaisei Tokumin', 'Dela Gothic One',
+    'Hina Mincho', 'Yusei Magic', 'Reggae One', 'RocknRoll One', 'Stick', 'Train One',
+    'Yomogi', 'Mochiy Pop One', 'Mochiy Pop P One', 'New Tegomin', 'Murecho',
+    'Klee One', 'Kiwi Maru', 'DotGothic16', 'Potta One', 'Rampart One',
+    'Monomaniac One', 'IBM Plex Sans JP',
+  ];
+
+  const basisOptions = [
+    { value: '',           label: '欧文のxの高さ\n(ex-height)' },
+    { value: 'cap-height', label: '欧文の大文字の高さ\n(cap-height)' },
+    { value: 'ch-width',   label: '欧文の0の幅\n(ch-width)' },
+    { value: 'ic-width',   label: '和文の漢字の幅\n(ic-width)' },
+  ];
+
+  // ------------------------------------------------------------------
+  // DOM 参照
+  // ------------------------------------------------------------------
+  const latinSelect   = document.getElementById('latin-font');
+  const jpSelect       = document.getElementById('jp-font');
+  const latinCustomInput = document.getElementById('latin-custom-input');
+  const latinCustomBtn   = document.getElementById('latin-custom-btn');
+  const jpCustomInput    = document.getElementById('jp-custom-input');
+  const jpCustomBtn      = document.getElementById('jp-custom-btn');
+  const fontSizeInput  = document.getElementById('font-size');
+  const fontSizeValue  = document.getElementById('font-size-value');
+  const fontWeightSelect = document.getElementById('font-weight');
+  const letterSpacingValueInput = document.getElementById('letter-spacing-value');
+  const letterSpacingUnitSelect = document.getElementById('letter-spacing-unit');
+  const paltEnabled    = document.getElementById('palt-enabled');
+  const adjustEnabled  = document.getElementById('adjust-enabled');
+  const adjustControls = document.getElementById('adjust-controls');
+  const basisGroup     = document.getElementById('basis-group');
+  const adjustValueInput   = document.getElementById('adjust-value');
+  const adjustValueDisplay = document.getElementById('adjust-value-display');
+  const previewText    = document.getElementById('preview-text');
+  const previewBefore  = document.getElementById('preview-before');
+  const codeOutput      = document.getElementById('code-output');
+  const copyBtn         = document.getElementById('copy-btn');
+  const copyBtnLabel    = document.getElementById('copy-btn-label');
+
+  // ------------------------------------------------------------------
+  // セレクトボックスとラジオボタンの初期構築
+  // ------------------------------------------------------------------
+  function populateSelect(select, fonts) {
+    fonts.forEach(font => {
+      const opt = document.createElement('option');
+      opt.value = font.value;
+      opt.textContent = font.name;
+      select.appendChild(opt);
+    });
+  }
+  populateSelect(latinSelect, latinFonts);
+  populateSelect(jpSelect, jpFonts);
+  populateSelect(fontWeightSelect, weightOptions);
+  fontWeightSelect.value = '400';
+
+  function populateDatalist(datalistId, names) {
+    const datalist = document.getElementById(datalistId);
+    names.forEach(name => {
+      const opt = document.createElement('option');
+      opt.value = name;
+      datalist.appendChild(opt);
+    });
+  }
+  populateDatalist('latin-font-suggestions', latinFontSuggestions);
+  populateDatalist('jp-font-suggestions', jpFontSuggestions);
+
+  basisOptions.forEach((basis, i) => {
+    const id = 'basis-' + i;
+    const input = document.createElement('input');
+    input.type = 'radio';
+    input.name = 'basis';
+    input.id = id;
+    input.value = basis.value;
+    input.className = 'basis-radio sr-only';
+    if (i === 0) input.checked = true;
+
+    const label = document.createElement('label');
+    label.htmlFor = id;
+    label.className = 'cursor-pointer text-center text-xs font-medium px-2 py-2 rounded-lg border border-slate-300 text-slate-600 hover:border-indigo-300 whitespace-pre-line transition-colors';
+    label.textContent = basis.label;
+
+    basisGroup.appendChild(input);
+    basisGroup.appendChild(label);
+  });
+
+  // ------------------------------------------------------------------
+  // Google Fonts の動的読み込み
+  // ------------------------------------------------------------------
+  let fontLink = document.getElementById('google-fonts-link');
+  if (!fontLink) {
+    fontLink = document.createElement('link');
+    fontLink.id = 'google-fonts-link';
+    fontLink.rel = 'stylesheet';
+    document.head.appendChild(fontLink);
+  }
+
+  function encodeFamily(name) {
+    return encodeURIComponent(name).replace(/%20/g, '+');
+  }
+
+  function buildFamilyQuery(font) {
+    return font.weights
+      ? `family=${encodeFamily(font.value)}:wght@${font.weights}`
+      : `family=${encodeFamily(font.value)}`;
+  }
+
+  function loadGoogleFonts(latinValue, jpValue) {
+    const latinFont = latinFonts.find(f => f.value === latinValue);
+    const jpFont = jpFonts.find(f => f.value === jpValue);
+    const families = [buildFamilyQuery(latinFont), buildFamilyQuery(jpFont)];
+    fontLink.href = `https://fonts.googleapis.com/css2?${families.join('&')}&display=swap`;
+  }
+
+  // ------------------------------------------------------------------
+  // 任意のGoogle Fontsフォントを追加
+  // ------------------------------------------------------------------
+  function addCustomFont(rawName, fontsArray, select) {
+    const name = rawName.replace(/\s+/g, ' ').trim();
+    if (!name) return false;
+
+    const existing = fontsArray.find(f => f.value.toLowerCase() === name.toLowerCase());
+    if (existing) {
+      select.value = existing.value;
+      return true;
+    }
+
+    // ウエイト選択に対応できるよう、カスタムフォントも全ウエイトをリクエストする
+    const font = { name, value: name, weights: FULL_WEIGHT_RANGE };
+    fontsArray.push(font);
+
+    const opt = document.createElement('option');
+    opt.value = font.value;
+    opt.textContent = font.name;
+    select.appendChild(opt);
+    select.value = font.value;
+    return true;
+  }
+
+  function setupCustomFontControl(inputEl, btnEl, fontsArray, select) {
+    const handleAdd = () => {
+      if (addCustomFont(inputEl.value, fontsArray, select)) {
+        inputEl.value = '';
+        updateAll();
+      }
+    };
+    btnEl.addEventListener('click', handleAdd);
+    inputEl.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        handleAdd();
+      }
+    });
+  }
+
+  // ------------------------------------------------------------------
+  // 状態の取得
+  // ------------------------------------------------------------------
+  function getSelectedBasis() {
+    const checked = basisGroup.querySelector('input[name="basis"]:checked');
+    return checked ? checked.value : '';
+  }
+
+  function buildFontFamilyValue() {
+    return `'${latinSelect.value}', '${jpSelect.value}', sans-serif`;
+  }
+
+  function buildFontSizeAdjustValue() {
+    const basis = getSelectedBasis();
+    const value = parseFloat(adjustValueInput.value).toFixed(2);
+    return basis ? `${basis} ${value}` : value;
+  }
+
+  function buildLetterSpacingValue() {
+    const value = parseFloat(letterSpacingValueInput.value) || 0;
+    return `${value}${letterSpacingUnitSelect.value}`;
+  }
+
+  function buildFontFeatureSettingsValue() {
+    return paltEnabled.checked ? '"palt"' : 'normal';
+  }
+
+  // ------------------------------------------------------------------
+  // 更新処理
+  // ------------------------------------------------------------------
+  function updateAll() {
+    loadGoogleFonts(latinSelect.value, jpSelect.value);
+
+    const fontSize = fontSizeInput.value;
+    fontSizeValue.textContent = `${fontSize}px`;
+
+    const isAdjustEnabled = adjustEnabled.checked;
+    adjustControls.classList.toggle('opacity-40', !isAdjustEnabled);
+    adjustControls.classList.toggle('pointer-events-none', !isAdjustEnabled);
+
+    adjustValueDisplay.textContent = parseFloat(adjustValueInput.value).toFixed(2);
+
+    const fontWeight = fontWeightSelect.value;
+    const letterSpacing = buildLetterSpacingValue();
+    const fontFeatureSettings = buildFontFeatureSettingsValue();
+
+    // プレビューへ反映（混植後 = 現在の設定）
+    previewText.style.fontFamily = buildFontFamilyValue();
+    previewText.style.fontSize = `${fontSize}px`;
+    previewText.style.fontWeight = fontWeight;
+    previewText.style.letterSpacing = letterSpacing;
+    previewText.style.fontFeatureSettings = fontFeatureSettings;
+    previewText.style.fontSizeAdjust = isAdjustEnabled ? buildFontFamilyAdjust() : 'none';
+
+    // プレビューへ反映（混植前 = font-size-adjust 未適用の比較用）
+    previewBefore.style.fontFamily = buildFontFamilyValue();
+    previewBefore.style.fontSize = `${fontSize}px`;
+    previewBefore.style.fontWeight = fontWeight;
+    previewBefore.style.letterSpacing = letterSpacing;
+    previewBefore.style.fontFeatureSettings = fontFeatureSettings;
+    previewBefore.style.fontSizeAdjust = 'none';
+    syncBeforeMirror();
+
+    // コード出力
+    updateCodeOutput(isAdjustEnabled, fontSize, fontWeight, letterSpacing);
+  }
+
+  function syncBeforeMirror() {
+    previewBefore.innerHTML = previewText.innerHTML;
+  }
+
+  function buildFontFamilyAdjust() {
+    return buildFontSizeAdjustValue();
+  }
+
+  function updateCodeOutput(isAdjustEnabled, fontSize, fontWeight, letterSpacing) {
+    const lines = [
+      '.mixed-text {',
+      `  font-family: ${buildFontFamilyValue()};`,
+      `  font-size: ${fontSize}px;`,
+      `  font-weight: ${fontWeight};`,
+      `  letter-spacing: ${letterSpacing};`,
+    ];
+    if (paltEnabled.checked) {
+      lines.push(`  font-feature-settings: ${buildFontFeatureSettingsValue()};`);
+    }
+    if (isAdjustEnabled) {
+      lines.push(`  font-size-adjust: ${buildFontSizeAdjustValue()};`);
+    }
+    lines.push('}');
+    codeOutput.textContent = lines.join('\n');
+  }
+
+  // ------------------------------------------------------------------
+  // イベント登録
+  // ------------------------------------------------------------------
+  latinSelect.addEventListener('change', updateAll);
+  jpSelect.addEventListener('change', updateAll);
+  setupCustomFontControl(latinCustomInput, latinCustomBtn, latinFonts, latinSelect);
+  setupCustomFontControl(jpCustomInput, jpCustomBtn, jpFonts, jpSelect);
+  previewText.addEventListener('input', syncBeforeMirror);
+  fontSizeInput.addEventListener('input', updateAll);
+  fontWeightSelect.addEventListener('change', updateAll);
+  letterSpacingValueInput.addEventListener('input', updateAll);
+  letterSpacingUnitSelect.addEventListener('change', updateAll);
+  paltEnabled.addEventListener('change', updateAll);
+  adjustEnabled.addEventListener('change', updateAll);
+  adjustValueInput.addEventListener('input', updateAll);
+  basisGroup.addEventListener('change', (e) => {
+    if (e.target.name === 'basis') updateAll();
+  });
+
+  copyBtn.addEventListener('click', async () => {
+    try {
+      await navigator.clipboard.writeText(codeOutput.textContent);
+      copyBtnLabel.textContent = 'コピーしました！';
+      setTimeout(() => { copyBtnLabel.textContent = 'コピー'; }, 1800);
+    } catch (err) {
+      const range = document.createRange();
+      range.selectNodeContents(codeOutput);
+      const selection = window.getSelection();
+      selection.removeAllRanges();
+      selection.addRange(range);
+      document.execCommand('copy');
+      selection.removeAllRanges();
+      copyBtnLabel.textContent = 'コピーしました！';
+      setTimeout(() => { copyBtnLabel.textContent = 'コピー'; }, 1800);
+    }
+  });
+
+  // ------------------------------------------------------------------
+  // 初期化
+  // ------------------------------------------------------------------
+  updateAll();
+})();
+</script>
+
+</body>
+</html>
