@@ -48,20 +48,19 @@
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen">
 
-<header class="border-b border-slate-200 bg-white">
-  <div class="max-w-7xl mx-auto px-6 py-5">
+<header>
+  <div class="max-w-7xl mx-auto px-6 pt-5 pb-2">
     <h1 class="text-xl font-bold tracking-tight text-slate-900">和欧混植 シミュレーター</h1>
-    <p class="mt-1 text-sm text-slate-500">Google Fonts の欧文・和文フォントを組み合わせ、<code class="px-1 py-0.5 rounded bg-slate-100 text-indigo-600">font-size-adjust</code> で字面の見た目の大きさを揃えるシミュレーターです。</p>
   </div>
 </header>
 
-<main class="max-w-7xl mx-auto px-6 py-8 grid grid-cols-1 lg:grid-cols-[380px_1fr] gap-6 items-start">
+<main class="max-w-7xl mx-auto px-6 pt-4 pb-8 grid grid-cols-1 lg:grid-cols-[380px_1fr] gap-6 items-start">
 
   <!-- ===================== 設定パネル ===================== -->
-  <section class="bg-white border border-slate-200 rounded-2xl shadow-sm p-6 space-y-8 lg:sticky lg:top-6">
+  <section class="bg-white border border-slate-200 rounded-2xl shadow-sm p-6 space-y-5 lg:sticky lg:top-6">
 
     <!-- フォント選択 -->
-    <div class="space-y-4">
+    <div class="space-y-2.5">
       <h2 class="text-sm font-semibold text-slate-900 flex items-center gap-2">
         <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-indigo-100 text-indigo-600 text-xs">1</span>
         フォント選択
@@ -92,7 +91,7 @@
     <hr class="border-slate-100">
 
     <!-- font-size -->
-    <div class="space-y-3">
+    <div class="space-y-2">
       <h2 class="text-sm font-semibold text-slate-900 flex items-center gap-2">
         <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-indigo-100 text-indigo-600 text-xs">2</span>
         font-size
@@ -107,22 +106,29 @@
     <hr class="border-slate-100">
 
     <!-- font-weight -->
-    <div class="space-y-3">
+    <div class="space-y-2">
       <h2 class="text-sm font-semibold text-slate-900 flex items-center gap-2">
         <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-indigo-100 text-indigo-600 text-xs">3</span>
         font-weight
+        <span class="group relative inline-flex">
+          <button type="button" class="inline-flex items-center justify-center w-4 h-4 rounded-full bg-slate-200 text-slate-500 text-[10px] font-bold hover:bg-indigo-100 hover:text-indigo-600 transition-colors" aria-label="説明を表示">?</button>
+          <span class="pointer-events-none absolute left-0 top-full mt-1.5 w-56 rounded-lg bg-slate-800 text-white text-[11px] leading-snug px-3 py-2 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity z-20 font-normal">指定したウエイトは欧文・和文どちらのフォントにも適用されます。フォントに該当ウエイトの字形が無い場合、ブラウザが近いウエイトで代替表示します。</span>
+        </span>
       </h2>
       <select id="font-weight" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-200 focus:border-indigo-400"></select>
-      <p class="text-[11px] leading-snug text-slate-400">指定したウエイトは欧文・和文どちらのフォントにも適用されます。フォントに該当ウエイトの字形が無い場合、ブラウザが近いウエイトで代替表示します。</p>
     </div>
 
     <hr class="border-slate-100">
 
     <!-- letter-spacing -->
-    <div class="space-y-3">
+    <div class="space-y-2">
       <h2 class="text-sm font-semibold text-slate-900 flex items-center gap-2">
         <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-indigo-100 text-indigo-600 text-xs">4</span>
         letter-spacing
+        <span class="group relative inline-flex">
+          <button type="button" class="inline-flex items-center justify-center w-4 h-4 rounded-full bg-slate-200 text-slate-500 text-[10px] font-bold hover:bg-indigo-100 hover:text-indigo-600 transition-colors" aria-label="説明を表示">?</button>
+          <span class="pointer-events-none absolute left-0 top-full mt-1.5 w-56 rounded-lg bg-slate-800 text-white text-[11px] leading-snug px-3 py-2 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity z-20 font-normal">文字と文字の間隔を調整します。正の値で広く、負の値で詰まります。和欧混植では少し詰める（マイナス値）と、欧文と和文の字間の差が目立ちにくくなり一体感が出ます。</span>
+        </span>
       </h2>
       <div class="flex gap-2">
         <input id="letter-spacing-value" type="number" step="0.01" value="0" class="flex-1 min-w-0 rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-200 focus:border-indigo-400">
@@ -136,11 +142,15 @@
     <hr class="border-slate-100">
 
     <!-- font-feature-settings: palt -->
-    <div class="space-y-3">
+    <div class="space-y-2">
       <div class="flex items-center justify-between">
         <h2 class="text-sm font-semibold text-slate-900 flex items-center gap-2">
           <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-indigo-100 text-indigo-600 text-xs">5</span>
           font-feature-settings
+          <span class="group relative inline-flex">
+            <button type="button" class="inline-flex items-center justify-center w-4 h-4 rounded-full bg-slate-200 text-slate-500 text-[10px] font-bold hover:bg-indigo-100 hover:text-indigo-600 transition-colors" aria-label="説明を表示">?</button>
+            <span class="pointer-events-none absolute left-0 top-full mt-1.5 w-56 rounded-lg bg-slate-800 text-white text-[11px] leading-snug px-3 py-2 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity z-20 font-normal">和文フォントのプロポーショナルメトリクス（約物・かなの詰め組み）を有効にします。</span>
+          </span>
         </h2>
         <label class="inline-flex items-center cursor-pointer gap-2">
           <span class="text-xs font-medium text-slate-500">palt 有効</span>
@@ -148,17 +158,20 @@
           <span class="relative w-9 h-5 bg-slate-300 peer-checked:bg-indigo-600 rounded-full transition-colors after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:after:translate-x-4"></span>
         </label>
       </div>
-      <p class="text-[11px] leading-snug text-slate-400">和文フォントのプロポーショナルメトリクス（約物・かなの詰め組み）を有効にします。</p>
     </div>
 
     <hr class="border-slate-100">
 
     <!-- font-size-adjust -->
-    <div class="space-y-4">
+    <div class="space-y-3">
       <div class="flex items-center justify-between">
         <h2 class="text-sm font-semibold text-slate-900 flex items-center gap-2">
           <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-indigo-100 text-indigo-600 text-xs">6</span>
           font-size-adjust
+          <span class="group relative inline-flex">
+            <button type="button" class="inline-flex items-center justify-center w-4 h-4 rounded-full bg-slate-200 text-slate-500 text-[10px] font-bold hover:bg-indigo-100 hover:text-indigo-600 transition-colors" aria-label="説明を表示">?</button>
+            <span class="pointer-events-none absolute left-0 top-full mt-1.5 w-60 rounded-lg bg-slate-800 text-white text-[11px] leading-snug px-3 py-2 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity z-20 font-normal">フォントが切り替わっても見た目の大きさが揃って見えるよう、指定した基準（x-heightなど）に合わせて実際に使われるフォントサイズを自動調整します。和欧混植で生じやすい「同じfont-sizeなのに和文だけ大きく/小さく見える」問題を解消できます。</span>
+          </span>
         </h2>
         <label class="inline-flex items-center cursor-pointer gap-2">
           <span class="text-xs font-medium text-slate-500">有効</span>
@@ -167,7 +180,7 @@
         </label>
       </div>
 
-      <div id="adjust-controls" class="space-y-4">
+      <div id="adjust-controls" class="space-y-3">
         <div>
           <span class="block text-xs font-medium text-slate-500 mb-2">基準（キーワード）</span>
           <div class="grid grid-cols-2 gap-2" id="basis-group">
