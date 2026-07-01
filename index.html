@@ -201,7 +201,7 @@
       <div class="bg-white border border-slate-200 rounded-2xl shadow-sm p-6">
         <div class="flex items-center justify-between mb-3">
           <h2 class="text-sm font-semibold text-slate-900">混植前</h2>
-          <span class="text-xs text-slate-400">font-size-adjust 未適用</span>
+          <span class="text-xs text-slate-400">和文フォントのみ</span>
         </div>
         <div
           id="preview-before"
@@ -545,8 +545,8 @@
     previewText.style.fontFeatureSettings = fontFeatureSettings;
     previewText.style.fontSizeAdjust = isAdjustEnabled ? buildFontFamilyAdjust() : 'none';
 
-    // プレビューへ反映（混植前 = font-size-adjust 未適用の比較用）
-    previewBefore.style.fontFamily = buildFontFamilyValue();
+    // プレビューへ反映（混植前 = 和文フォントのみ）
+    previewBefore.style.fontFamily = `'${jpSelect.value}', sans-serif`;
     previewBefore.style.fontSize = `${fontSize}px`;
     previewBefore.style.fontWeight = fontWeight;
     previewBefore.style.lineHeight = lineHeight;
